@@ -1,15 +1,25 @@
 package Bambusa;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+
+/*
+ * This is a sample Robot which has a built in Mecanum Drive for Bambusa 6226
+ *
+ * This class contains all the motors in the entire robot, and functions that operate them accordingly.
+ * Comes with preexisting field-centric drive function.
+ *
+ * If this is your first time, make sure to change the motor names in the Robot constructor to
+ * match their names in the configuration (found in the driver station).
+ */
+
+
 
 public class Robot {
-
-    /// VARIABLES ///
     // IMU (For Field Centric Drive)
     public IMU imu;
 
@@ -20,11 +30,7 @@ public class Robot {
     public DcMotor backRightMotor;
 
     // Other Motors
-        // Example: public DcMotor randomMotor;
-
-    // Drive Speed & Boost Speed (When Holding Left Trigger)
-    public double driveSpeed = 0.4;
-    public double boostSpeed = 0.8;
+        // Example: private DcMotorEx randomMotor;
 
     /// ROBOT CONSTRUCTOR ///
     public Robot(HardwareMap hardwareMap) {
@@ -42,7 +48,7 @@ public class Robot {
         this.backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // Other Motors (Example)
-        //this.randomMotor = hardwareMap.dcMotor.get("random motor");
+        // this.randomMotor = hardwareMap.dcMotor.get("random motor");
 
         // Adjust Orientation Parameters For IMU And Field Centric Drive
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
@@ -53,7 +59,7 @@ public class Robot {
     }
 
     // Field Centric Drive
-    public void drive(double leftx, double lefty, double rightx, double lt, boolean resetYaw) {
+    public void drive(double driveSpeed, double boostSpeed, double leftx, double lefty, double rightx, double lt, boolean resetYaw) {
         // User Input (Gamepad Values Are Passed As Parameters)
         double y = -lefty;
         double x = leftx * 1.1;
@@ -72,7 +78,7 @@ public class Robot {
         double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
 
         // Counters Imperfect Strafing
-        rotX = rotX * 1.1;
+        rotX *= 1.1;
 
         // Drive Train Calculations
         double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
@@ -82,13 +88,29 @@ public class Robot {
         double backRightPower = (rotY + rotX - rx) / denominator;
 
         // Final Speed
-        double finalSpeed = lerp(this.driveSpeed, this.boostSpeed, lt);
+        double finalSpeed = lerp(driveSpeed, boostSpeed, lt);
 
         // Apply Power
         frontLeftMotor.setPower(frontLeftPower * (finalSpeed + lt * finalSpeed));
         backLeftMotor.setPower(backLeftPower * (finalSpeed + lt * finalSpeed));
         frontRightMotor.setPower(frontRightPower * (finalSpeed + lt * finalSpeed));
         backRightMotor.setPower(backRightPower * (finalSpeed + lt * finalSpeed));
+    }
+
+    // Sets Motor Powers
+    public void setMotorPowers(double frontLeftPower, double frontRightPower, double backLeftPower, double backRightPower) {
+        frontLeftMotor.setPower(frontLeftPower);
+        frontRightMotor.setPower(frontRightPower);
+        backLeftMotor.setPower(backLeftPower);
+        backRightMotor.setPower(backRightPower);
+    }
+
+    // Sets Motor Powers To Zero
+    public void stop() {
+        frontLeftMotor.setPower(0);
+        frontRightMotor.setPower(0);
+        backLeftMotor.setPower(0);
+        backRightMotor.setPower(0);
     }
 
     // Finds T Of The Way From Value A To Value B

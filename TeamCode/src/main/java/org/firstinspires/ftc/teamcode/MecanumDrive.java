@@ -51,6 +51,39 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+/*
+ * This is the Mecanum Drive for roadrunner, and different configurations will need to be adjusted for.
+ * These are the tuning values we got year 2025, and are meant to provide a reference for what the values will look like.
+ *
+ * Here is the official RoadRunner v1.0 tuning page:
+ * https://rr.brott.dev/docs/v1-0/tuning/
+ *
+ * 3 Dead Wheel Localizer - Tuning Checklist
+ * -----------------------------------------------------------------------------------------------------
+ * Setup (Important):
+ * Use Correct Drive Class [ ]
+ * Use Correct Localizer [ ]
+ * Set Logo And USB Direction For IMU [ ]
+ * MecanumDirectionDebugger [ ]
+ * DeadWheelDirectionDebugger [ ]
+ *
+ * Actual Tuning:
+ * ForwardPushTest [ ]
+ * ForwardRampLogger [ ]
+ *  - Go To: http://192.168.43.1:8080/tuning/forward-ramp.html
+ * LateralRampLogger [ ]
+ *  - Got To: http://192.168.43.1:8080/tuning/lateral-ramp.html
+ * AngularRampLogger [ ]
+ *  - Go To: http://192.168.43.1:8080/tuning/dead-wheel-angular-ramp.html
+ *
+ * Finalizing Tuning:
+ * For the following steps, use http://192.168.43.1:8080/dash use field mode for the graphing.
+ * ManualFeedforwardTuner [ ]
+ * ManualFeedbackTuner [ ]
+ * SplineTest [ ]
+ * -----------------------------------------------------------------------------------------------------
+ */
+
 @Config
 public final class MecanumDrive {
     public static class Params {
@@ -60,17 +93,17 @@ public final class MecanumDrive {
         public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection =
                 RevHubOrientationOnRobot.LogoFacingDirection.UP;
         public RevHubOrientationOnRobot.UsbFacingDirection usbFacingDirection =
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+                RevHubOrientationOnRobot.UsbFacingDirection.LEFT;
 
         // drive model parameters
-        public double inPerTick = 1;
-        public double lateralInPerTick = inPerTick;
-        public double trackWidthTicks = 0;
+        public double inPerTick = 0.00053255;
+        public double lateralInPerTick = 0.00044816910994761;
+        public double trackWidthTicks = 22080.440526964867;
 
         // feedforward parameters (in tick units)
-        public double kS = 0;
-        public double kV = 0;
-        public double kA = 0;
+        public double kS = 1.007;
+        public double kV = 0.000074;
+        public double kA = 0.000007;
 
         // path profile parameters (in inches)
         public double maxWheelVel = 50;
@@ -82,9 +115,9 @@ public final class MecanumDrive {
         public double maxAngAccel = Math.PI;
 
         // path controller gains
-        public double axialGain = 0.0;
-        public double lateralGain = 0.0;
-        public double headingGain = 0.0; // shared with turn
+        public double axialGain = 1.0;
+        public double lateralGain = 1.0;
+        public double headingGain = 1.2; // shared with turn
 
         public double axialVelGain = 0.0;
         public double lateralVelGain = 0.0;
@@ -138,7 +171,10 @@ public final class MecanumDrive {
             imu = lazyImu.get();
 
             // TODO: reverse encoders if needed
-            //   leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+            leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
+            rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
+            rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
+            leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
 
             this.pose = pose;
         }
@@ -226,8 +262,8 @@ public final class MecanumDrive {
         // TODO: make sure your config has motors with these names (or change them)
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
-        leftBack = hardwareMap.get(DcMotorEx.class, "leftBack");
-        rightBack = hardwareMap.get(DcMotorEx.class, "rightBack");
+        leftBack = hardwareMap.get(DcMotorEx.class, "leftRear");
+        rightBack = hardwareMap.get(DcMotorEx.class, "rightRear");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
 
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -236,7 +272,8 @@ public final class MecanumDrive {
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // TODO: reverse motor directions if needed
-        //   leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // TODO: make sure your config has an IMU with this name (can be BNO or BHI)
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
@@ -245,7 +282,8 @@ public final class MecanumDrive {
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
-        localizer = new DriveLocalizer(pose);
+        // TODO: make sure localization is correct, and make sure encoder names in the localizer are correct
+        localizer = new ThreeDeadWheelLocalizer(hardwareMap, PARAMS.inPerTick, pose);
 
         FlightRecorder.write("MECANUM_PARAMS", PARAMS);
     }
