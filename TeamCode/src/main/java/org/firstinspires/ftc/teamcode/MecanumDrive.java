@@ -63,21 +63,27 @@ import java.util.List;
  * Setup (Important):
  * Use Correct Drive Class [ ]
  * Use Correct Localizer [ ]
- * Set Logo And USB Direction For IMU [ ]
+ * Use Correct Motor Names [ ]
+ * Use Correct Encoder Names In Localizer [ ]
+ * Set Logo And USB Direction [ ]
  * MecanumDirectionDebugger [ ]
  * DeadWheelDirectionDebugger [ ]
  *
  * Actual Tuning:
  * ForwardPushTest [ ]
+ *
  * ForwardRampLogger [ ]
  *  - Go To: http://192.168.43.1:8080/tuning/forward-ramp.html
+ *
  * LateralRampLogger [ ]
  *  - Got To: http://192.168.43.1:8080/tuning/lateral-ramp.html
+ *
  * AngularRampLogger [ ]
  *  - Go To: http://192.168.43.1:8080/tuning/dead-wheel-angular-ramp.html
  *
- * Finalizing Tuning:
+ * Testing And Final Adjustments
  * For the following steps, use http://192.168.43.1:8080/dash use field mode for the graphing.
+ * LocalizationTest [ ]
  * ManualFeedforwardTuner [ ]
  * ManualFeedbackTuner [ ]
  * SplineTest [ ]
@@ -96,14 +102,14 @@ public final class MecanumDrive {
                 RevHubOrientationOnRobot.UsbFacingDirection.LEFT;
 
         // drive model parameters
-        public double inPerTick = 0.00053255;
-        public double lateralInPerTick = 0.00044816910994761;
-        public double trackWidthTicks = 22080.440526964867;
+        public double inPerTick = 0.000530298845495;
+        public double lateralInPerTick = 0.0003771185603991267;
+        public double trackWidthTicks = 20362.944187118213;
 
         // feedforward parameters (in tick units)
-        public double kS = 1.007;
-        public double kV = 0.000074;
-        public double kA = 0.000007;
+        public double kS = 0.93283;
+        public double kV = 0.000073;
+        public double kA = 0.000005;
 
         // path profile parameters (in inches)
         public double maxWheelVel = 50;
@@ -115,9 +121,9 @@ public final class MecanumDrive {
         public double maxAngAccel = Math.PI;
 
         // path controller gains
-        public double axialGain = 1.0;
-        public double lateralGain = 1.0;
-        public double headingGain = 1.2; // shared with turn
+        public double axialGain = 3.0;
+        public double lateralGain = 4.0;
+        public double headingGain = 3.0; // shared with turn
 
         public double axialVelGain = 0.0;
         public double lateralVelGain = 0.0;

@@ -3,6 +3,7 @@ package Bambusa;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -29,8 +30,12 @@ public class Robot {
     public DcMotor backLeftMotor;
     public DcMotor backRightMotor;
 
+    // Example PID
+    public DcMotorEx arm;
+    public PID pid;
+
     // Other Motors
-        // Example: private DcMotorEx randomMotor;
+        // Example: public DcMotor randomMotor;
 
     /// ROBOT CONSTRUCTOR ///
     public Robot(HardwareMap hardwareMap) {
@@ -43,12 +48,20 @@ public class Robot {
         this.frontRightMotor = hardwareMap.dcMotor.get("rightFront");
         this.backRightMotor = hardwareMap.dcMotor.get("rightRear");
 
+        // PID Use Example
+        this.arm = hardwareMap.get(DcMotorEx.class, "slideChain");
+        this.pid = new PID(this.arm, 0.015, 0, 0, 0, 0, 0, 0);
+
         // Setting Drive Train Motor Direction
         this.frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         this.backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // Other Motors (Example)
         // this.randomMotor = hardwareMap.dcMotor.get("random motor");
+
+        // Other Encoders (Example)
+        // this.randomMotor = hardwareMap.dcMotor.get("random motor");
+        // this.randomMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         // Adjust Orientation Parameters For IMU And Field Centric Drive
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
