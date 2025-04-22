@@ -30,12 +30,9 @@ public class Robot {
     public DcMotor backLeftMotor;
     public DcMotor backRightMotor;
 
-    // Example PID
+    // Arm & PID
     public DcMotorEx arm;
     public PID pid;
-
-    // Other Motors
-        // Example: public DcMotor randomMotor;
 
     /// ROBOT CONSTRUCTOR ///
     public Robot(HardwareMap hardwareMap) {

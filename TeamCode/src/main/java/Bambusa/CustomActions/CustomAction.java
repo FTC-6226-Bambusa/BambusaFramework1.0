@@ -29,8 +29,8 @@ import com.acmerobotics.roadrunner.Action;
 
 public class CustomAction implements Action {
     ElapsedTime timer;
-    private Robot robot;
-    private double p;
+    private final Robot robot;
+    private final double p;
 
     // Constructor
     public CustomAction(Robot robot, double position) {

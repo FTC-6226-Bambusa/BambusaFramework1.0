@@ -11,23 +11,21 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import android.util.Size;
 
-// TODO: Test April Tags and Use Other Vision Methods
-
 /*
-* This class is meant to provide an example for handling vision.
-* As of now, all it can handle are april tags, but I hope to improve that in the future, such as OpenCV.
-* Thanks to FTC 7588 for providing this awesome tutorial about april tags: https://www.youtube.com/watch?v=CjoXoygzXzI
-*
-* Check out LimeLight.
-* Goated tutorial at: https://www.youtube.com/watch?v=IHRZDPQ-_l8
-* Buy at: https://www.andymark.com/products/limelight-3a#:~:text=Product%20Overview-,Limelight%203A%20is%20a%20plug%20and%20play%2C%20zero%2Dcode%20perception,teams%20of%20all%20experience%20levels.
-*
-* Helpful Videos On OpenCV:
-* https://www.youtube.com/watch?v=JO7dqzJi8lw
-* https://www.youtube.com/watch?v=547ZUZiYfQE&t=264s
-* https://www.youtube.com/watch?v=Ojzb_fQ4a-U
-* https://www.youtube.com/watch?v=mhUTWIPsxFE
-*/
+ * This is a sample april tag processor for Bambusa 6226
+ * This code is meant to be copied and pasted into your Auto or TeleOp for localization purposes.
+ *
+ * Here are the steps necessary to set up a camera:
+ * 1 - Plug in your camera into the control hub.
+ * 2 - Using your Driver Station, go to configure and press Scan Devices.
+ * 3 - Something like "Webcam 1" should show. You may rename it. Change Line 51 to your new name.
+ * 4 - Calibrate your camera, visit:
+ *      https://ftc-docs.firstinspires.org/en/latest/programming_resources/vision/camera_calibration/camera-calibration.html
+ *
+ * Your done!
+ */
+
+
 
 @TeleOp
 @Config
@@ -43,7 +41,21 @@ public class Vision extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        // April Tag Settings
+        // FTC Dashboard setup
+        dashboard = FtcDashboard.getInstance();
+
+        // Webcam
+        WebcamName webcam;
+
+        try {
+            webcam = hardwareMap.get(WebcamName.class, "Webcam 1");
+        } catch (Exception e) {
+            telemetry.addData("Error: ", "Webcam not found. Please check your configuration, and scan devices again.");
+            telemetry.update();
+            return;
+        }
+
+        // April Tag Processor Settings
         processor = new AprilTagProcessor.Builder()
                 .setDrawAxes(true)
                 .setDrawCubeProjection(true)
@@ -54,38 +66,43 @@ public class Vision extends LinearOpMode {
         // Camera Settings
         vision = new VisionPortal.Builder()
                 .addProcessor(processor)
-                .setCamera(hardwareMap.get(WebcamName.class, "webcam"))
-                .setCameraResolution(new Size(500, 500))
+                .setCamera(webcam)
+                .setCameraResolution(new Size(640, 480))
                 .build();
 
-        // Starting And Stopping
+        // Waiting For Start
         waitForStart();
         if (isStopRequested()) return;
 
-        while (opModeIsActive()) {
+        // Starting Camera Stream To FTC Dashboard
+        dashboard.startCameraStream(vision, 30);
 
-            // April Tag Handling
+        while (opModeIsActive()) {
+            packet = new TelemetryPacket();
+
+            // Process April Tag Detections
             if (!processor.getDetections().isEmpty()) {
                 AprilTagDetection tag = processor.getDetections().get(0);
 
-                // Now, you can access the april tag position relative to the camera!
-                // Examples: tag.ftcPose.x or tag.ftcPose.yaw;
-
-                // April Tag Debugging
-                packet.put("x: ", tag.ftcPose.x);
-                packet.put("y: ", tag.ftcPose.y);
-                packet.put("z: ", tag.ftcPose.z);
-                packet.put("roll: ", tag.ftcPose.roll);
-                packet.put("pitch: ", tag.ftcPose.pitch);
-                packet.put("yaw: ", tag.ftcPose.yaw);
+                // Check If Position Is Available
+                if (tag.ftcPose != null) {
+                    packet.put("x", tag.ftcPose.x);
+                    packet.put("y", tag.ftcPose.y);
+                    packet.put("z", tag.ftcPose.z);
+                    packet.put("roll", tag.ftcPose.roll);
+                    packet.put("pitch", tag.ftcPose.pitch);
+                    packet.put("yaw", tag.ftcPose.yaw);
+                } else {
+                    packet.put("April Tag Position: ", "Not available");
+                }
             }
 
-            // Telemetry (Dashboard)
-            packet.put("Dashboard Telemetry Working: ", true);
+            // Dashboard Telemetry
+            packet.put("Dashboard Telemetry Working", true);
             dashboard.sendTelemetryPacket(packet);
 
-            // Telemetry (Driver Station)
-            telemetry.addData("Sample Telemetry Working: ", true);
+            // Driver Station Telemetry
+            telemetry.addData("Sample Telemetry Working", true);
             telemetry.update();
         }
     }

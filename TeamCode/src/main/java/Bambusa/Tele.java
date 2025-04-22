@@ -28,7 +28,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 @Config
 public class Tele extends LinearOpMode {
     // Telemetry For FTC Dashboard
-    TelemetryPacket packet;
     FtcDashboard dashboard;
 
     // Declaring Robot Class
@@ -51,7 +50,7 @@ public class Tele extends LinearOpMode {
         public static double a = 0.000007;
         public static double s = 0;
 
-        // Position Constant (Sets Arm Position)
+        // Position Constant (Sets PID Target)
         public static double pos = 0;
     }
 
@@ -64,11 +63,7 @@ public class Tele extends LinearOpMode {
 
         // Initialize Robot
         robot = new Robot(hardwareMap);
-
-        // Setting PID Constants
-        robot.pid.setHorizontalPos(5);
-        // 560 is from arm down to arm vertical, 90 is what it is supposed to display
-        robot.pid.setTicksPerDegree(560/90);
+        robot.pid.setTicksPerDegree((double) 560 / 90);
 
         waitForStart();
         if (isStopRequested()) return;
@@ -82,7 +77,7 @@ public class Tele extends LinearOpMode {
             robot.pid.setSAV(params.s,  params.a, params.v);
             robot.pid.moveTo(params.pos);
 
-            // Create a new telemetry packet each loop
+            // FTC Dashboard Telemetry
             TelemetryPacket packet = new TelemetryPacket();
 
             packet.put("Current Error", robot.pid.getError());

@@ -4,9 +4,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-// TODO: Fix F (Feedforward) and test S (Static Friction Constant).
-// TODO: Implement feedforward offset to properly counter gravity (arm should float freely).
-
 /*
  * This is a sample PID for Bambusa 6226
  * This class is designed to be able to control a single motor, and be able to move it to a target quickly and accurately.
@@ -38,7 +35,7 @@ public class PID {
 
     // PID Values (With Feedforward)
     public double p, i, d, f, v, a, s;
-    public double horizontalPos = 0;
+    public double horizontalPos = motor.getCurrentPosition();
     public double ticksPerDegree = 90.0 / 360;
 
     private double integralSum = 0;
@@ -50,6 +47,8 @@ public class PID {
     /// CONSTRUCTORS ///
     public PID(DcMotorEx motor) {
         this.motor = motor;
+
+        this.horizontalPos = motor.getCurrentPosition();
 
         this.p = 0;
         this.i = 0;
@@ -63,6 +62,8 @@ public class PID {
 
     public PID(DcMotorEx motor, double p, double i, double d, double f) {
         this.motor = motor;
+
+        this.horizontalPos = motor.getCurrentPosition();
 
         this.p = p;
         this.i = i;
@@ -78,6 +79,7 @@ public class PID {
         this.motor = motor;
 
         this.ticksPerDegree = tpd;
+        this.horizontalPos = motor.getCurrentPosition();
 
         this.p = p;
         this.i = i;
@@ -91,6 +93,8 @@ public class PID {
 
     public PID(DcMotorEx motor, double p, double i, double d, double f, double s, double a, double v) {
         this.motor = motor;
+
+        this.horizontalPos = motor.getCurrentPosition();
 
         this.p = p;
         this.i = i;
@@ -106,6 +110,7 @@ public class PID {
         this.motor = motor;
 
         this.ticksPerDegree = tpd;
+        this.horizontalPos = motor.getCurrentPosition();
 
         this.p = p;
         this.i = i;
@@ -122,14 +127,14 @@ public class PID {
         double pos = this.motor.getCurrentPosition();
         double error = target - pos;
         double derivative = (error - lastError) / timer.milliseconds() * 1000;
-        double feed = Math.abs(Math.cos(Math.toRadians((pos - this.horizontalPos) / ticksPerDegree))); // TODO: Fix & Test
+        double feed = Math.abs(Math.cos(Math.toRadians((pos - this.horizontalPos) / ticksPerDegree)));
 
         double velocity = (pos - lastPos) / timer.milliseconds() * 1000;
         double acceleration = (velocity - lastVel) / timer.milliseconds() * 1000;
         double direction = Math.abs(error) / (error == 0 ? 1 : error);
 
         double output = (error * this.p) + (derivative * this.d) + (integralSum * this.i) + (feed * this.f) +
-                        (velocity * this.v) + (acceleration * this.a) + (this.s * direction);
+                        (velocity * this.v) + (acceleration * this.a) + (direction * this.s);
 
         integralSum += error * timer.seconds();
 
@@ -140,6 +145,13 @@ public class PID {
         timer.reset();
 
         return output;
+    }
+
+    public void levitate() {
+        double pos = this.motor.getCurrentPosition();
+        double feed = Math.abs(Math.cos(Math.toRadians((pos - this.horizontalPos) / ticksPerDegree)));
+
+        this.motor.setPower(feed);
     }
 
     // Moves Motor To Target

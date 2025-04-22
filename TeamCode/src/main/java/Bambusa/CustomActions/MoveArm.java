@@ -13,8 +13,8 @@ import com.acmerobotics.roadrunner.Action;
 
 public class MoveArm implements Action {
     ElapsedTime timer;
-    private Robot robot;
-    private double p;
+    private final Robot robot;
+    private final double p;
 
     // Constructor
     public MoveArm(Robot robot, double position) {
