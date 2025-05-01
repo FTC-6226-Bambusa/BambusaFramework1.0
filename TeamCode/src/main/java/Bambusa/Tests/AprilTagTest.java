@@ -1,4 +1,4 @@
-package Bambusa;
+package Bambusa.Tests;
 
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -23,13 +23,13 @@ import android.util.Size;
  *      https://ftc-docs.firstinspires.org/en/latest/programming_resources/vision/camera_calibration/camera-calibration.html
  *
  * Your done!
- */
+*/
 
 
 
 @TeleOp
 @Config
-public class Vision extends LinearOpMode {
+public class AprilTagTest extends LinearOpMode {
     // Telemetry For FTC Dashboard
     TelemetryPacket packet;
     FtcDashboard dashboard;

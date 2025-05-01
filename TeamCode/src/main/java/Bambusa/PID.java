@@ -22,20 +22,20 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  *
  * Ticks Per Degree: The number of ticks added to the position after the motor rotates one degree.
  * Horizontal Pos: Used for the feedforward - tick position of arm when it is level to the ground.
- */
+*/
 
 
 
 public class PID {
     // Motor Which Has PID
-    DcMotorEx motor;
+    public DcMotorEx motor;
 
     // Timer
-    ElapsedTime timer = new ElapsedTime();
+    public ElapsedTime timer = new ElapsedTime();
 
     // PID Values (With Feedforward)
     public double p, i, d, f, v, a, s;
-    public double horizontalPos = motor.getCurrentPosition();
+    public double horizontalPos;
     public double ticksPerDegree = 90.0 / 360;
 
     private double integralSum = 0;
@@ -147,11 +147,24 @@ public class PID {
         return output;
     }
 
+    // Floats Using Feedforward Constant - Good For Tuning Feeforward
     public void levitate() {
         double pos = this.motor.getCurrentPosition();
         double feed = Math.abs(Math.cos(Math.toRadians((pos - this.horizontalPos) / ticksPerDegree)));
 
         this.motor.setPower(feed);
+    }
+
+    // Disables PID
+    public void disable() {
+        this.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        this.motor.setPower(0);
+    }
+
+    // Tries To Stay Still Without Using Feedforward Constant
+    public void brake() {
+        this.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        this.motor.setPower(0);
     }
 
     // Moves Motor To Target
@@ -194,7 +207,7 @@ public class PID {
         this.ticksPerDegree = tpd;
     }
 
-    // Helps User Find Correct Target Position
+    // Helps User Find Correct Target Position (If FTC Dashboard Is Not Available)
     public double testPosition(double speed, boolean moveForward, boolean moveBackward) {
         this.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.motor.setPower(moveForward ? speed : (moveBackward ? -speed : 0));
@@ -228,7 +241,7 @@ public class PID {
     }
 
     // Determines Whether Arm Is At Target
-    public boolean isAtTarget(double maxError, double maxVelocity) {
-        return Math.abs(this.lastError) < maxError && Math.abs(this.lastVel) < maxVelocity;
+    public boolean isAtTarget(double maxError, double maxSpeed) {
+        return Math.abs(this.lastError) < maxError && Math.abs(this.lastVel) < maxSpeed;
     }
 }

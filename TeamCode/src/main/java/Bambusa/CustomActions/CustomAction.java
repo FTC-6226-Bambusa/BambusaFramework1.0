@@ -9,7 +9,6 @@ import com.acmerobotics.roadrunner.Action;
 /*
  * This is a sample Custom Action for Bambusa 6226, specifically for RoadRunner v1.0.
  *
- *
  * The Auto class will have an example of how CustomAction is initialized.
  *
  * If this is your first time, understand that the action will continue to run until the 'run'
@@ -25,7 +24,7 @@ import com.acmerobotics.roadrunner.Action;
  *
  * Credits to 6282 Simi Valley Robotics for having an awesome tutorial on how to create custom actions.
  * Their video will be linked here: https://www.youtube.com/watch?v=uBwVSRxvpB8&t=1633s
- */
+*/
 
 public class CustomAction implements Action {
     ElapsedTime timer;

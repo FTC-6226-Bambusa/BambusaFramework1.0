@@ -1,8 +1,9 @@
 package Bambusa;
 
+// Import Custom Actions Here
 import Bambusa.CustomActions.MoveArm;
-import org.firstinspires.ftc.teamcode.MecanumDrive;
 
+import org.firstinspires.ftc.teamcode.MecanumDrive;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -26,7 +27,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
  * Installing And Tuning: https://www.youtube.com/watch?v=3Sd1S6F35tA
  * Creating First Auto: https://www.youtube.com/watch?v=uBwVSRxvpB8&t=1633s
  * Gain Tuning Tutorial: https://www.youtube.com/watch?v=DLQDwS_EZjU
- */
+*/
 
 
 
@@ -59,8 +60,10 @@ public class Auto extends LinearOpMode {
         // Sample Trajectory - Runs Automatically
         Actions.runBlocking(
                 drive.actionBuilder(startPose)
+                        .lineToX(50) // Position In Inches
                         .stopAndAdd(new MoveArm(robot, 260)) // Custom Action Example
                         .waitSeconds(10)
+                        .turn(360)
                         .build()
         );
 

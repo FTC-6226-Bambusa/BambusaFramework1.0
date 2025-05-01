@@ -11,12 +11,12 @@ import com.qualcomm.robotcore.hardware.IMU;
 /*
  * This is a sample Robot which has a built in Mecanum Drive for Bambusa 6226
  *
- * This class contains all the motors in the entire robot, and functions that operate them accordingly.
- * Comes with preexisting field-centric drive function.
+ * This class should contain all the motors in the entire robot, and functions that operate them accordingly.
+ * Already has a field-centric drive function.
  *
  * If this is your first time, make sure to change the motor names in the Robot constructor to
  * match their names in the configuration (found in the driver station).
- */
+*/
 
 
 
@@ -54,10 +54,10 @@ public class Robot {
         this.backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // Other Motors (Example)
-        // this.randomMotor = hardwareMap.dcMotor.get("random motor");
+        // this.randomMotor = hardwareMap.get(DcMotor.class, "randomMotor");
 
         // Other Encoders (Example)
-        // this.randomMotor = hardwareMap.dcMotor.get("random motor");
+        // this.randomMotor = hardwareMap.get(DcMotorEx.class, "randomMotor");
         // this.randomMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         // Adjust Orientation Parameters For IMU And Field Centric Drive
