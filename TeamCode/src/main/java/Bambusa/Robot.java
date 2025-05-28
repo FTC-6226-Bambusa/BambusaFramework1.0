@@ -1,6 +1,7 @@
 package Bambusa;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -17,8 +18,6 @@ import com.qualcomm.robotcore.hardware.IMU;
  * If this is your first time, make sure to change the motor names in the Robot constructor to
  * match their names in the configuration (found in the driver station).
 */
-
-
 
 public class Robot {
     // IMU (For Field Centric Drive)
@@ -47,7 +46,7 @@ public class Robot {
 
         // PID Use Example
         this.arm = hardwareMap.get(DcMotorEx.class, "slideChain");
-        this.pid = new PID(this.arm, 0.015, 0, 0, 0, 0, 0, 0);
+        this.pid = new PID(this.arm, 0.01, 0, 0, 0.37, 0, 0, -0.00037);
 
         // Setting Drive Train Motor Direction
         this.frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -98,7 +97,7 @@ public class Robot {
         double backRightPower = (rotY + rotX - rx) / denominator;
 
         // Final Speed
-        double finalSpeed = lerp(driveSpeed, boostSpeed, lt);
+        double finalSpeed = MathPlus.lerp(driveSpeed, boostSpeed, lt);
 
         // Apply Power
         frontLeftMotor.setPower(frontLeftPower * (finalSpeed + lt * finalSpeed));
@@ -107,11 +106,28 @@ public class Robot {
         backRightMotor.setPower(backRightPower * (finalSpeed + lt * finalSpeed));
     }
 
+    // Simple Strafe Drive
+    public void drive(double power, double angle) {
+        double rotY = power * Math.cos(angle);
+        double rotX = power * Math.sin(angle);
+
+        double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX), 1.0);
+        double frontLeftPower = (rotY + rotX) / denominator;
+        double backLeftPower = (rotY - rotX) / denominator;
+        double frontRightPower = (rotY - rotX) / denominator;
+        double backRightPower = (rotY + rotX) / denominator;
+
+        frontLeftMotor.setPower(frontLeftPower);
+        backLeftMotor.setPower(backLeftPower);
+        frontRightMotor.setPower(frontRightPower);
+        backRightMotor.setPower(backRightPower);
+    }
+
     // Sets Motor Powers
     public void setMotorPowers(double frontLeftPower, double frontRightPower, double backLeftPower, double backRightPower) {
         frontLeftMotor.setPower(frontLeftPower);
-        frontRightMotor.setPower(frontRightPower);
         backLeftMotor.setPower(backLeftPower);
+        frontRightMotor.setPower(frontRightPower);
         backRightMotor.setPower(backRightPower);
     }
 
@@ -121,10 +137,5 @@ public class Robot {
         frontRightMotor.setPower(0);
         backLeftMotor.setPower(0);
         backRightMotor.setPower(0);
-    }
-
-    // Finds T Of The Way From Value A To Value B
-    private double lerp(double a, double b, double t) {
-        return a + (b - a) * t;
     }
 }

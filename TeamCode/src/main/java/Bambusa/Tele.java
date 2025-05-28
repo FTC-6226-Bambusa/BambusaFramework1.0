@@ -3,6 +3,7 @@ package Bambusa;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -20,20 +21,19 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
  * Rotation - Right Stick X - Simple rotation, will not affect movement direction, as this is a field-centric drive.
  * Speed Control - Left Trigger - The more this is pressed, the closer the drive speed gets to boost speed.
  * Reset IMU - Left Dpad - Sets direction of forward to current heading.
- *
- * LEARN HOW TO USE LIMELIGHT 3A - https://www.youtube.com/watch?v=IHRZDPQ-_l8
 */
-
-
 
 @TeleOp
 @Config
 public class Tele extends LinearOpMode {
     // Telemetry For FTC Dashboard
-    FtcDashboard dashboard;
+    private FtcDashboard dashboard;
 
     // Declaring Robot Class
-    Robot robot;
+    private Robot robot;
+
+    // Limelight 3A
+    private Limelight3A limelight;
 
     // Robot Parameters (Editable In FTC Dashboard)
     public static class PARAMS {
@@ -95,5 +95,4 @@ public class Tele extends LinearOpMode {
             telemetry.update();
         }
     }
-
 }

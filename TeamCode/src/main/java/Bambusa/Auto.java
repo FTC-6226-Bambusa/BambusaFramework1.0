@@ -3,9 +3,11 @@ package Bambusa;
 // Import Custom Actions Here
 import Bambusa.CustomActions.MoveArm;
 
-import org.firstinspires.ftc.teamcode.MecanumDrive;
+// Other Imports
+import RoadRunner.MecanumDrive;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -29,8 +31,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
  * Gain Tuning Tutorial: https://www.youtube.com/watch?v=DLQDwS_EZjU
 */
 
-
-
 @Autonomous
 public class Auto extends LinearOpMode {
     // Telemetry For FTC Dashboard
@@ -46,7 +46,6 @@ public class Auto extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-
         // Starting And Stopping
         waitForStart();
         if (isStopRequested()) return;
@@ -57,14 +56,16 @@ public class Auto extends LinearOpMode {
         // Robot For Custom Actions
         robot = new Robot(hardwareMap);
 
+        // Action Example
+        Action doSomething = drive.actionBuilder(startPose)
+                                  .lineToX(50) // Position In Inches
+                                  .stopAndAdd(new MoveArm(robot, 260)) // Custom Action Example
+                                  .waitSeconds(10)
+                                  .build();
+
         // Sample Trajectory - Runs Automatically
         Actions.runBlocking(
-                drive.actionBuilder(startPose)
-                        .lineToX(50) // Position In Inches
-                        .stopAndAdd(new MoveArm(robot, 260)) // Custom Action Example
-                        .waitSeconds(10)
-                        .turn(360)
-                        .build()
+                doSomething
         );
 
         // Telemetry (Dashboard)

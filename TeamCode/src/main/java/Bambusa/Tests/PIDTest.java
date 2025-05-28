@@ -24,8 +24,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
  * Reset IMU - Left Dpad - Sets direction of forward to current heading.
  */
 
-
-
 @TeleOp
 @Config
 public class PIDTest extends LinearOpMode {
@@ -90,5 +88,4 @@ public class PIDTest extends LinearOpMode {
             telemetry.update();
         }
     }
-
 }

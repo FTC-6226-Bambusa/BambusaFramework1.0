@@ -18,13 +18,11 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Advanced Values:
  * S: Static Friction - How much power you want to use to overcome friction.
  * A: Acceleration Gain - How much you want to accelerate to counter inertia.
- * V: Velocity Gain - How much you want to counter inertia.
+ * V: Velocity Gain - How much you want to maintain motion against drag or friction.
  *
  * Ticks Per Degree: The number of ticks added to the position after the motor rotates one degree.
  * Horizontal Pos: Used for the feedforward - tick position of arm when it is level to the ground.
 */
-
-
 
 public class PID {
     // Motor Which Has PID
@@ -38,11 +36,8 @@ public class PID {
     public double horizontalPos;
     public double ticksPerDegree = 90.0 / 360;
 
+    private double lastPower, lastError, lastPos, lastVel = 0;
     private double integralSum = 0;
-    private double lastPower = 0;
-    private double lastError = 0;
-    private double lastPos = 0;
-    private double lastVel = 0;
 
     /// CONSTRUCTORS ///
     public PID(DcMotorEx motor) {

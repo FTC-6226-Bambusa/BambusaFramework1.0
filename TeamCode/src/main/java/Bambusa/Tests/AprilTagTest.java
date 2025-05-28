@@ -25,8 +25,6 @@ import android.util.Size;
  * Your done!
 */
 
-
-
 @TeleOp
 @Config
 public class AprilTagTest extends LinearOpMode {
