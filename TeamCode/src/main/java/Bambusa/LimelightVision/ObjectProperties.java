@@ -5,7 +5,7 @@ package Bambusa.LimelightVision;
     the ObjectLocalizer class. Example of object localization is given in the LimelightHandler class.
  */
 
-public class ObjectProperties {
+public class  ObjectProperties {
     public String className;
     public double realWidthMeters;   // Real-world width of the object in meters
     public double realHeightMeters;  // Real-world height of the object in meters

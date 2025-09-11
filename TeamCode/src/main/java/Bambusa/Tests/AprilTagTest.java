@@ -18,7 +18,7 @@ import android.util.Size;
  * Here are the steps necessary to set up a camera:
  * 1 - Plug in your camera into the control hub.
  * 2 - Using your Driver Station, go to configure and press Scan Devices.
- * 3 - Something like "Webcam 1" should show. You may rename it. Change Line 51 to your new name.
+ * 3 - Something like "Webcam 1" should show. You may rename it. Change Line 49 to your new name.
  * 4 - Calibrate your camera, visit:
  *      https://ftc-docs.firstinspires.org/en/latest/programming_resources/vision/camera_calibration/camera-calibration.html
  *

@@ -39,7 +39,7 @@ public class PID {
     private double lastPower, lastError, lastPos, lastVel = 0;
     private double integralSum = 0;
 
-    /// CONSTRUCTORS ///
+    /// PID CONSTRUCTORS ///
     public PID(DcMotorEx motor) {
         this.motor = motor;
 
@@ -142,7 +142,7 @@ public class PID {
         return output;
     }
 
-    // Floats Using Feedforward Constant - Good For Tuning Feeforward
+    // Floats Using Feedforward Constant - Good For Tuning Feedforward
     public void levitate() {
         double pos = this.motor.getCurrentPosition();
         double feed = Math.abs(Math.cos(Math.toRadians((pos - this.horizontalPos) / ticksPerDegree)));
@@ -196,6 +196,9 @@ public class PID {
     public void setHorizontalPos(double pos) {
         this.horizontalPos = pos;
     }
+    public void setHorizontalPos() {
+        this.horizontalPos = motor.getCurrentPosition();
+    }
 
     // Sets Ticks Per Degree (For Feedforward)
     public void setTicksPerDegree(double tpd) {
@@ -232,7 +235,7 @@ public class PID {
 
     // Calculates Degrees Per Tick
     public double degreesToTicks(double degrees) {
-        return degrees / this.ticksPerDegree;
+        return degrees * this.ticksPerDegree;
     }
 
     // Determines Whether Arm Is At Target

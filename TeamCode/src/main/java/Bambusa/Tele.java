@@ -12,15 +12,15 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
  *
  * For those who are new,
  * The runOpMode function is where you will initialize (assign values) to your variables. This happens once.
- * In the while opModeIsActive loop, this is what updates every frame, until the robot is stopped.
+ * The while opModeIsActive loop is what updates in real time, until the robot is stopped.
  *
- * Here are the controls:
+ * Here are the default controls:
  *
  * Driving (With Gamepad1):
  * Translation - Left Stick - Simple forward-backward and strafing movement.
  * Rotation - Right Stick X - Simple rotation, will not affect movement direction, as this is a field-centric drive.
  * Speed Control - Left Trigger - The more this is pressed, the closer the drive speed gets to boost speed.
- * Reset IMU - Left Dpad - Sets direction of forward to current heading.
+ * Reset IMU - Left Dpad - Sets direction of forward to current robot heading.
 */
 
 @TeleOp
@@ -65,6 +65,9 @@ public class Tele extends LinearOpMode {
 
         // Initialize Robot
         robot = new Robot(hardwareMap);
+
+        // Setting Ticks Per Degree + Horizontal Position (Important For PID To Work)
+        robot.pid.setHorizontalPos();
         robot.pid.setTicksPerDegree((double) 560 / 90);
 
         waitForStart();
@@ -77,7 +80,7 @@ public class Tele extends LinearOpMode {
             // Sample PID - Sets Values During Runtime
             robot.pid.setPID(params.p, params.i, params.d, params.f);
             robot.pid.setSAV(params.s,  params.a, params.v);
-            robot.pid.moveTo(params.pos); // Moves Robot Arm To Position
+            // robot.pid.moveTo(params.pos); // Moves Robot Arm To Position
 
             // FTC Dashboard Telemetry
             TelemetryPacket packet = new TelemetryPacket();

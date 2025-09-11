@@ -19,10 +19,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
  * If you are using this for the first time, make sure to tune RoadRunner v1.0 by going to:
  * https://rr.brott.dev/docs/v1-0/tuning/
  *
- * If your robot is not running, then this is likely that your Kv and Ka values in MecanumDrive are still 0.
+ * If your robot is not running, then it is likely that your Kv and Ka values in MecanumDrive are still 0.
  *
  * If you need to reference a different auto, I highly recommend visiting 6282 Simi Valley Robotics's youtube channel,
- * as it has multiple great tutorials on how to use RoadRunner v1.0. There channel will be linked here:
+ * as it has multiple great tutorials on how to use RoadRunner v1.0. Their channel will be linked here:
  * https://www.youtube.com/@FTC6282
  *
  * Specific Helpful Videos (For RoadRunner v1.0):
@@ -64,9 +64,7 @@ public class Auto extends LinearOpMode {
                                   .build();
 
         // Sample Trajectory - Runs Automatically
-        Actions.runBlocking(
-                doSomething
-        );
+        Actions.runBlocking(doSomething);
 
         // Telemetry (Dashboard)
         packet.put("Dashboard Telemetry Working: ", true);
@@ -77,3 +75,9 @@ public class Auto extends LinearOpMode {
         telemetry.update();
     }
 }
+
+// According to all known laws of aviation, there is no way a bee should be able to fly. Its wings are too small to
+// get its fat little body off the ground. The bee, of course, flies anyway, because bees don't care what humans think
+// is impossible.
+
+// Yellow-Black, Yellow, Black, Yellow, Black, Yellow, Black -- Ooh, Black and Yellow! Let's shake things up a little!
