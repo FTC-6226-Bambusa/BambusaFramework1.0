@@ -29,8 +29,6 @@ public class MoveArm implements Action {
             timer = new ElapsedTime();
         }
 
-        this.robot.pid.moveTo(p);
-
-        return !this.robot.pid.isAtTarget(this.robot.pid.degreesToTicks(2), this.robot.pid.degreesToTicks(2));
+        return false;
     }
 }

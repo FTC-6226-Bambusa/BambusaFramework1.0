@@ -24,4 +24,16 @@ public class MathPlus {
     public static double dist(double dx, double dy, double dz) {
         return Math.sqrt(dx * dx + dy * dy + dz * dz);
     }
+
+    // Angle Wrap (For Pure Pursuit)
+    public static double AngleWrap(double angle) {
+        while (angle < -Math.PI) {
+            angle += 2 * Math.PI;
+        }
+        while (angle > Math.PI) {
+            angle -= 2 * Math.PI;
+        }
+
+        return angle;
+    }
 }

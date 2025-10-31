@@ -1,6 +1,11 @@
 package Bambusa;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+
+import com.acmerobotics.roadrunner.Pose2d;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -8,6 +13,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+
+import java.util.List;
 
 /*
  * This is a sample Robot which has a built in Mecanum Drive for Bambusa 6226
@@ -20,8 +27,14 @@ import com.qualcomm.robotcore.hardware.IMU;
 */
 
 public class Robot {
-    // IMU (For Field Centric Drive)
+    // Limelight (Camera)
+    public Limelight3A limelight;
+
+    // Inertial Measurement Unit (For Field Centric Drive)
     public IMU imu;
+
+    // Location Of Robot
+    public Pose2d pose;
 
     // Drive Chain Motors
     public DcMotor frontLeftMotor;
@@ -29,12 +42,14 @@ public class Robot {
     public DcMotor backLeftMotor;
     public DcMotor backRightMotor;
 
-    // Arm & PID
-    public DcMotorEx arm;
-    public PID pid;
+    // Launcher Wheels
+    public DcMotor launcherLeft;
+    public DcMotor launcherRight;
 
     /// ROBOT CONSTRUCTOR ///
     public Robot(HardwareMap hardwareMap) {
+        limelight = hardwareMap.get(Limelight3A.class, "lemonlight");
+
         // IMU (For Field Centric Drive)
         imu = hardwareMap.get(IMU.class, "imu");
 
@@ -44,20 +59,16 @@ public class Robot {
         this.frontRightMotor = hardwareMap.dcMotor.get("rightFront");
         this.backRightMotor = hardwareMap.dcMotor.get("rightRear");
 
-        // PID Use Example
-        this.arm = hardwareMap.get(DcMotorEx.class, "slideChain");
-        this.pid = new PID(this.arm, 0.01, 0, 0, 0.37, 0, 0, -0.00037);
+        // Launcher
+        // this.launcherLeft = hardwareMap.dcMotor.get("launcherLeft");
+        // this.launcherRight = hardwareMap.dcMotor.get("launcherRight");
 
         // Setting Drive Train Motor Direction
         this.frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         this.backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        // Other Motors (Example)
-        // this.randomMotor = hardwareMap.get(DcMotor.class, "randomMotor");
-
-        // Other Encoders (Example)
-        // this.randomMotor = hardwareMap.get(DcMotorEx.class, "randomMotor");
-        // this.randomMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        // Setting Launcher Direction
+//        this.launcherRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // Adjust Orientation Parameters For IMU And Field Centric Drive
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
@@ -70,8 +81,8 @@ public class Robot {
     // Field Centric Drive
     public void drive(double driveSpeed, double boostSpeed, double leftx, double lefty, double rightx, double lt, boolean resetYaw) {
         // User Input (Gamepad Values Are Passed As Parameters)
-        double y = lefty;
-        double x = leftx * 1.1;
+        double y = -lefty;
+        double x = -leftx * 1.1;
         double rx = rightx;
 
         // Resets IMU Rotation
@@ -126,6 +137,12 @@ public class Robot {
         backRightMotor.setPower(backRightPower);
     }
 
+    // Launching Ball
+    public void launch() {
+//        launcherLeft.setPower(1);
+//        launcherLeft.setPower(0);
+    }
+
     // Sets Motor Powers
     public void setMotorPowers(double fl, double fr, double bl, double br) {
         frontLeftMotor.setPower(fl);
@@ -140,5 +157,30 @@ public class Robot {
         frontRightMotor.setPower(0);
         backLeftMotor.setPower(0);
         backRightMotor.setPower(0);
+    }
+
+    // April Tag - Detecting Ball Pattern
+    public int detectFirstAprilTag(int pipeline) {
+        int order1 = 10;
+        int order2 = 130;
+        int order3 = 50;
+
+        limelight.pipelineSwitch(pipeline);
+
+        LLResult result = limelight.getLatestResult();
+
+        if (result != null && result.isValid()) {
+            List<LLResultTypes.FiducialResult> aprilTagResults = result.getFiducialResults();
+
+            if (!aprilTagResults.isEmpty()) {
+                LLResultTypes.FiducialResult firstTag = aprilTagResults.get(0);
+
+                int id = firstTag.getFiducialId();
+
+                return id;
+            }
+        }
+
+        return -1;
     }
 }

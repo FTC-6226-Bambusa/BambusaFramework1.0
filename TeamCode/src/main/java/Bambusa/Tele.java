@@ -29,6 +29,11 @@ public class Tele extends LinearOpMode {
     // Telemetry For FTC Dashboard
     private FtcDashboard dashboard;
 
+//    private bank_account money;
+//    give money from bank_account{
+//        give money to liam stark;
+//    }
+
     // Declaring Robot Class
     private Robot robot;
 
@@ -54,6 +59,9 @@ public class Tele extends LinearOpMode {
 
         // Position Constant (Sets PID Target)
         public static double pos = 0;
+
+        // Limelight April Tag Pipeline
+        public static int aprilTagPipeline = 0;
     }
 
     public static PARAMS params = new PARAMS();
@@ -66,10 +74,6 @@ public class Tele extends LinearOpMode {
         // Initialize Robot
         robot = new Robot(hardwareMap);
 
-        // Setting Ticks Per Degree + Horizontal Position (Important For PID To Work)
-        robot.pid.setHorizontalPos();
-        robot.pid.setTicksPerDegree((double) 560 / 90);
-
         waitForStart();
         if (isStopRequested()) return;
 
@@ -77,24 +81,19 @@ public class Tele extends LinearOpMode {
             // Sample Driving Code
             robot.drive(params.driveSpeed, params.boostSpeed, gamepad1.left_stick_x, gamepad1.left_stick_y, gamepad1.right_stick_x, gamepad1.left_trigger, gamepad1.dpad_left);
 
-            // Sample PID - Sets Values During Runtime
-            robot.pid.setPID(params.p, params.i, params.d, params.f);
-            robot.pid.setSAV(params.s,  params.a, params.v);
-            // robot.pid.moveTo(params.pos); // Moves Robot Arm To Position
-
             // FTC Dashboard Telemetry
             TelemetryPacket packet = new TelemetryPacket();
 
-            packet.put("Current Error", robot.pid.getError());
-            packet.put("Current Power", robot.pid.getPower());
-            packet.put("Current Position", robot.pid.getPos());
+            int id = robot.detectFirstAprilTag(params.aprilTagPipeline);
+
             packet.put("Dashboard Telemetry Working", true);
+            packet.put("April Tag ID", id);
             dashboard.sendTelemetryPacket(packet);
 
+
             // Driver Station Telemetry
-            telemetry.addData("Current Error", robot.pid.getError());
-            telemetry.addData("Current Position", robot.pid.getPos());
             telemetry.addData("Sample Telemetry Working", true);
+            telemetry.addData("April Tag ID", id);
             telemetry.update();
         }
     }
